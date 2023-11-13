@@ -1,4 +1,4 @@
-#### 安装Matplotlib
+## 安装Matplotlib
 
 ```python
 python3 -m pip install --user matplotlib
@@ -7,7 +7,7 @@ python3 -m pip install --user matplotlib
 - `python3 -m ` 用于指定在 python3 环境下安装
 - `--user` 用于将包安装到用户主目录下
 
-#### 绘制简单的折线图
+## 绘制简单的折线图
 
 ```pyth
 import matplotlib.pyplot as plt
@@ -195,6 +195,79 @@ plt.savefig('name.png', bbox_inches='tight')
 ```
 
 - `show` 函数会将图片显示到 Matplotlib 查看器上, 而 `savefig` 函数会将图片命名成 name.png, 然后保存到相对路径上, `bbox_inches` 参数会切割掉图片周围多余的部分, 若不想切割, 则忽略掉该参数即可
+
+## 随机游走
+
+```python
+import random
+import matplotlib.pyplot as plt
+
+
+'''
+创建一个RandomWalk类, 该类需要三个属性:
+    一个是跟踪随机游走次数的变量,
+    另外两个是列表, 分别存储随机游走经过的每个点的x坐标值和y坐标值
+'''
+class RandomWalk:
+    def __init__(self, num_points=5000):
+        self.num_points = num_points
+        self.x_values = [0]
+        self.y_values = [0]
+
+    def fill_walk(self):
+        while len(self.x_values) < self.num_points:
+            # 分别计算出下个随机点相对的水平方向及距离和竖直轴方向及距离,
+            x_direction = random.choice([-1, 1])
+            x_distance = random.choice([0, 1, 2, 3, 4, 5])
+            x_step = x_direction * x_distance
+
+            y_direction = random.choice([-1, 1])
+            y_distance = random.choice([0, 1, 2, 3, 4, 5])
+            y_step = y_direction * y_distance
+
+            # 下个随机点不能原地踏步
+            if x_step == 0 and y_step == 0:
+                continue
+
+            # 根据坐标列表中最后一个点的坐标, 计算出下个随机点的真实坐标
+            x = self.x_values[-1] + x_step
+            y = self.y_values[-1] + y_step
+
+            # 将下个随机点的真实坐标尾插入坐标列表中
+            self.x_values.append(x)
+            self.y_values.append(y)
+
+
+# 死循环, 模拟多次随机游走
+while True:
+    rw = RandomWalk()
+    rw.fill_walk()
+
+    plt.style.use('classic')
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=224) # 参数用来调整尺寸以适应屏幕, 我的mac电脑的api是224
+    point_numbers = range(rw.num_points) # 用来进行颜色映射, edgecolors 参数用来删除每个点的轮廓
+    ax.scatter(rw.x_values, rw.y_values, c=point_numbers, cmap=plt.cm.Blues, edgecolors='none', s=1)
+
+    # 指定两条轴上刻度的间距必须相等
+    ax.set_aspect('equal')
+
+    # 重新绘制起点和终点
+    ax.scatter(0, 0, c='green', edgecolors='none', s=100)
+    ax.scatter(rw.x_values[-1], rw.y_values[-1], c='red', edgecolors='none', s=100)
+
+    # 隐藏坐标轴
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    plt.show()
+
+    keep_running = input("Make another walk? (y/n): ")
+    if keep_running == 'n':
+        break
+
+```
+
+
 
 <script src="https://giscus.app/client.js"
         data-repo="wynhelloworld/blog-comments"
