@@ -198,21 +198,16 @@ plt.savefig('name.png', bbox_inches='tight')
 
 ## 随机游走
 
+#### 创建 RandomWalk 类
+
 ```python
 import random
-import matplotlib.pyplot as plt
 
-
-'''
-创建一个RandomWalk类, 该类需要三个属性:
-    一个是跟踪随机游走次数的变量,
-    另外两个是列表, 分别存储随机游走经过的每个点的x坐标值和y坐标值
-'''
 class RandomWalk:
     def __init__(self, num_points=5000):
-        self.num_points = num_points
-        self.x_values = [0]
-        self.y_values = [0]
+        self.num_points = num_points  # 点的数量
+        self.x_values = [0]  # 所有点的横坐标
+        self.y_values = [0]  # 所有点的纵坐标
 
     def fill_walk(self):
         while len(self.x_values) < self.num_points:
@@ -237,6 +232,13 @@ class RandomWalk:
             self.x_values.append(x)
             self.y_values.append(y)
 
+```
+
+#### 绘制图像
+
+```python
+import matplotlib.pyplot as plt
+from random_walk import RandomWalk
 
 # 死循环, 模拟多次随机游走
 while True:
@@ -244,12 +246,10 @@ while True:
     rw.fill_walk()
 
     plt.style.use('classic')
-    fig, ax = plt.subplots(figsize=(10, 6), dpi=224) # 参数用来调整尺寸以适应屏幕, 我的mac电脑的api是224
-    point_numbers = range(rw.num_points) # 用来进行颜色映射, edgecolors 参数用来删除每个点的轮廓
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=224)  # 参数用来调整尺寸以适应屏幕, 我的mac电脑的api是224
+    point_numbers = range(rw.num_points)  # 用来进行颜色映射, edgecolors参数用来删除每个点的轮廓
     ax.scatter(rw.x_values, rw.y_values, c=point_numbers, cmap=plt.cm.Blues, edgecolors='none', s=1)
-
-    # 指定两条轴上刻度的间距必须相等
-    ax.set_aspect('equal')
+    ax.set_aspect('equal')  # 指定两条轴上刻度的间距必须相等
 
     # 重新绘制起点和终点
     ax.scatter(0, 0, c='green', edgecolors='none', s=100)
@@ -264,10 +264,71 @@ while True:
     keep_running = input("Make another walk? (y/n): ")
     if keep_running == 'n':
         break
-
 ```
 
+## 使用 Plotly 模拟掷骰子
 
+本节使用 Plotly 来生成交互式图形. Plotly能生成在浏览器中显示的图形, 并且能够自适应. Plotly Express 是 Plotly 的众多子模块之一, 它是 Plotly 中用于可视化的高级 API.
+
+#### 安装Plotly
+
+```python
+python3 -m pip install --user plotly
+python3 -m pip install --user pandas
+```
+
+- Plotly Express 依赖于pandas, 因此需要同时安装 pandas.
+
+#### 创建 Die 类
+
+```python
+from random import randint
+
+class Die:
+    def __init__(self, num_sides=6):
+        self.num_sides = num_sides  # 表示骰子的面数, 默认为6面
+
+    def roll(self):
+        return randint(1, self.num_sides)  # 随机返回一面的点数
+```
+
+#### 掷骰子 && 绘制直方图
+
+```python
+import plotly.express as px
+
+from die import Die
+
+die1 = Die()
+die2 = Die()
+
+results = []
+for roll_num in range(1000):
+    result = die1.roll() + die2.roll()
+    results.append(result)
+
+frequencies = []
+max_result = die1.num_sides + die2.num_sides
+poss_results = range(2, max_result + 1)
+for value in poss_results:
+    frequency = results.count(value)
+    frequencies.append(frequency)
+
+# 设置图像标题和坐标轴标签
+title = "Results of Rolling Two One D6 1,000 Times"
+labels = {
+    'x': 'Result',
+    'y': 'Frequency of Result'
+}
+fig = px.bar(x=poss_results, y=frequencies, title=title, labels=labels)
+
+fig.update_layout(xaxis_dtick=1)  # 设置x轴上刻度标记的间距为1, 让每个条形都加上标签
+
+# fig.write_html('dice_visual.html')  # 将图像保存为HTML文件
+fig.show()
+```
+
+本例掷了两枚骰子共 1000 次, 用 `frequencies` 统计出最小点数 2 到最大点数 12出现的频率, 最后用 plotly 生成直方图.
 
 <script src="https://giscus.app/client.js"
         data-repo="wynhelloworld/blog-comments"
