@@ -6,7 +6,8 @@
 
 ## 目录
 
-- [数据可视化](./Generating-Data.md)
+- [生成数据](./Generating-Data.md)
+- [下载数据](./Downloading-Data.md)
 
 <script src="https://giscus.app/client.js"
         data-repo="wynhelloworld/blog-comments"
