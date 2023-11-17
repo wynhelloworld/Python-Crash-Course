@@ -48,3 +48,63 @@ ax.tick_params(labelsize=16)
 
 plt.show()
 ```
+
+## 制作全球地震散点图: GeoJSON 格式
+
+```python
+from pathlib import Path
+import json
+import plotly.express as px
+import pandas as pd
+
+path = Path('./eq_data/all_eq_20231017-12231111.geojson')
+try:
+    contents = path.read_text()  # Windows系统默认是unicode, 所以会出现UnicodeDecodeError异常
+except:
+    contents = path.read_text(encoding='utf-8')
+all_eq_data = json.loads(contents)  # 将json转换成dict
+
+path = Path('eq_data/readable_eq_data.geojson')
+readable_eq_data = json.dumps(all_eq_data, indent=4)  # 将dict转换成json
+path.write_text(readable_eq_data)  # 将json写入文件中
+
+all_eq_dicts = all_eq_data['features']  # 取到所有的地震特征
+mags = []  # 震级
+titles = []  # 标题
+lons = []  # 经度
+lats = []  # 纬度
+for eq_dict in all_eq_dicts:
+    mag = eq_dict['properties']['mag']
+    if mag < 0:  # 下面画图时, 发现震级居然有负数, 所以这里做一下特殊处理
+        mag = 0
+    title = eq_dict['properties']['title']
+    lon = eq_dict['geometry']['coordinates'][0]
+    lat = eq_dict['geometry']['coordinates'][1]
+    mags.append(mag)
+    titles.append(title)
+    lons.append(lon)
+    lats.append(lat)
+
+data = pd.DataFrame(data=zip(lons, lats, titles, mags), columns=['经度', '纬度', '位置', '震级'])
+
+fig = px.scatter(
+    # x=lons,
+    # y=lats,
+    # labels={'x': '经度', 'y': '纬度'},
+    data,
+    x='经度',
+    y='纬度',
+    range_x=[-200, 200],
+    range_y=[-90, 90],
+    width=800,
+    height=800,
+    title='全球地震散点图',
+    size='震级',  # 根据震级划分点的大小
+    size_max=10,  # 限制点的大小最大为10
+    color='震级',  # 根据震级划分颜色
+    hover_name='位置', # 显示地震发生位置
+)
+# fig.write_html('global_earthquakes.html')
+fig.show()
+```
+
