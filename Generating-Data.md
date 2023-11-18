@@ -1,10 +1,10 @@
-## 安装Matplotlib
+## 安装 Matplotlib
 
 ```python
 python3 -m pip install --user matplotlib
 ```
 
-- `python3 -m ` 用于指定在 python3 环境下安装
+- `python3 -m` 用于指定在 python3 环境下安装
 - `--user` 用于将包安装到用户主目录下
 
 ## 绘制简单的折线图
@@ -268,16 +268,16 @@ while True:
 
 ## 使用 Plotly 模拟掷骰子
 
-本节使用 Plotly 来生成交互式图形. Plotly能生成在浏览器中显示的图形, 并且能够自适应. Plotly Express 是 Plotly 的众多子模块之一, 它是 Plotly 中用于可视化的高级 API.
+本节使用 Plotly 来生成交互式图形. Plotly 能生成在浏览器中显示的图形, 并且能够自适应. Plotly Express 是 Plotly 的众多子模块之一, 它是 Plotly 中用于可视化的高级 API.
 
-#### 安装Plotly
+#### 安装 Plotly
 
 ```python
 python3 -m pip install --user plotly
 python3 -m pip install --user pandas
 ```
 
-- Plotly Express 依赖于pandas, 因此需要同时安装 pandas.
+- Plotly Express 依赖于 pandas, 因此需要同时安装 pandas.
 
 #### 创建 Die 类
 
@@ -328,7 +328,7 @@ fig.update_layout(xaxis_dtick=1)  # 设置x轴上刻度标记的间距为1, 让�
 fig.show()
 ```
 
-本例掷了两枚骰子共 1000 次, 用 `frequencies` 统计出最小点数 2 到最大点数 12出现的频率, 最后用 plotly 生成直方图.
+本例掷了两枚骰子共 1000 次, 用 `frequencies` 统计出最小点数 2 到最大点数 12 出现的频率, 最后用 plotly 生成直方图.
 
 <script src="https://giscus.app/client.js"
         data-repo="wynhelloworld/blog-comments"
